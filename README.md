@@ -1,4 +1,4 @@
-# Learn how to process streaming data, ADW and Kafka in Dataflow
+# Use Spark Streaming to read a high volume of data from Kafka 
 
 ## Introduction
 
@@ -6,11 +6,12 @@ Oracle Cloud Dataflow is a managed service for the great open-source project nam
 Basically, with Spark you can use it for massive processing files, streaming and database operations. There is a lot of applications you can build with a very high scalable processing. 
 Spark can scale and use clustered machines to paralellize jobs with a minimum of configuration and hard-work.
 
-Using Spark as a managed service (Dataflow), you can add many scalable services to multiply the power of cloud processing and this tutorial shows you how to use:
+Using Spark as a managed service (Dataflow), you can add many scalable services to multiply the power of cloud processing.
 
-- Object Storage: As low-cost and scalable a file repository
-- Autonomous: As a scalable Database in the cloud
-- Streaming: As a high scalable Kafka managed service 
+Data Flow has the hability to process **Spark Streaming**.
+Streaming applications require continuous execution for a long period of time that often extends beyond 24 hours, and might be as long as weeks or even months. In case of unexpected failures, streaming applications must restart from the point of failure without producing incorrect computational results. Data Flow relies on Spark structured streaming check-pointing to record the processed offset which can be stored in your Object Storage bucket.
+
+>**Note:** If you need to process data as a batch strategy, you can read this article: [Process large files in Autonomous Database and Kafka with Oracle Cloud Infrastructure Data Flow](https://docs.oracle.com/en/learn/oci-dataflow-adw-kafka/#introduction)
 
 ![dataflow-use-case.png](./images/dataflow-use-case.png?raw=true)
 
@@ -19,8 +20,7 @@ In this tutorial, you can see the most common activities used to process a great
 
 ## Objectives
 
-- Learn how Dataflow can be used to process a large amount of data
-- Learn how to integrate scalable services: File Repository, streaming data, Database and Queue
+- Learn how Dataflow can be used to process a large amount of data in a scalable and near realtime application
 
 ## Prerequisites
 
@@ -494,6 +494,8 @@ Wait until the Status go to **Succeeded** and you can see the results.
 - [Add ADMIN password to Vault](https://docs.oracle.com/en/learn/data-flow-analyze-logs/index.html#add-the-database-admin-password-to-vault)
 
 - [Create Oracle Cloud Streaming](https://blogs.oracle.com/developers/post/getting-started-with-oracle-streaming-service-oss)
+
+- [Process large files in Autonomous Database and Kafka with Oracle Cloud Infrastructure Data Flow](https://docs.oracle.com/en/learn/oci-dataflow-adw-kafka/#introduction)
 
 - [Spark Streaming](https://docs.oracle.com/pt-br/iaas/data-flow/using/spark-streaming.htm)
 ## Acknowledgments
