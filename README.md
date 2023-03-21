@@ -1,4 +1,4 @@
-# Learn how to process large files, ADW and Kafka in Dataflow
+# Learn how to process streaming data, ADW and Kafka in Dataflow
 
 ## Introduction
 
@@ -15,12 +15,12 @@ Using Spark as a managed service (Dataflow), you can add many scalable services 
 ![dataflow-use-case.png](./images/dataflow-use-case.png?raw=true)
 
 
-In this tutorial, you can see the most common activities used to process large files, querying database and merge/join the data to form another table in memory. You can write this massive data into your database and in a Kafka queue. Everything with a very low-cost and high effective performance.
+In this tutorial, you can see the most common activities used to process a great data volume streaming, querying database and merge/join the data to form another table in memory or send data to any destiny near realtime. You can write this massive data into your database and in a Kafka queue. Everything with a very low-cost and high effective performance.
 
 ## Objectives
 
 - Learn how Dataflow can be used to process a large amount of data
-- Learn how to integrate scalable services: File Repository, Database and Queue
+- Learn how to integrate scalable services: File Repository, streaming data, Database and Queue
 
 ## Prerequisites
 
@@ -256,21 +256,16 @@ The token will be generated only in this step and do not will be visible anymore
 ![auth_token_2.png](./images/auth_token_2.png?raw=true)
 
 
-## Task 7: Setup the Demo Applications
+## Task 7: Setup the Demo Application
 
 The next step is setup some information before execute the demo.
-This demo has 2 applications:
 
->**Java-CSV-DB:** This application will read 1,000,000 lines of a csv file (organizations1M.csv) and execute some usual processes in a common scenario for integration with a database (Oracle Cloud Autonomous Data Warehouse) and a Kafka streaming 
-(Oracle Cloud Streaming). So the demo shows how a CSV dataset can be merged with a auxiliary table in database and crossing types of tables generating a third dataset in memory. After the execution, the dataset will be inserted on ADW and published on the Kafka streaming. 1,000,000 lines!!!!
+>**DataflowSparkStreamDemo:** This application will connect to the Kafka Streaming and consume every data and merge with an ADW table named **GDPPERCAPTA**. The stream data will be merged with **GDPPERCAPTA** and will be saved as a CSV file, but it can be exposed to another Kafka topic.
 
->**JavaConsumeKafka:** This application will repeat some steps of the first application just to take CPU and memory for a high volume of processing. The difference is, the first application publishes to the Kafka streaming, this application reads from the Streaming. 
 
-The applications could be downloaded here:
+The application could be downloaded here:
 
-[Java-CSV-DB.zip](./files/Java-CSV-DB.zip)
-
-[JavaConsumeKafka.zip](./files/JavaConsumeKafka.zip)
+[DataflowSparkStreamDemo.zip](./files/DataflowSparkStreamDemo.zip)
 
 ### Find the information in your OCI Console
 
@@ -314,12 +309,13 @@ These are the variables that need to be changed with your tenancy resources valu
 
 |VARIABLE NAME| RESOURCE NAME| INFORMATION TITLE|
 |-----|----|----|
-|NAMESPACE|TENANCY NAMESPACE|TENANCY|
-|OBJECT_STORAGE_NAMESPACE|TENANCY NAMESPACE|TENANCY|
-|PASSWORD_SECRET_OCID|PASSWORD_SECRET_OCID|OCID|
+|bootstrapServers|Streaming Connection Settings|Bootstrap Servers|
 |streamPoolId|Streaming Connection Settings|ocid1.streampool.oc1.iad..... value in SASL Connection String|
 |kafkaUsername|Streaming Connection Settings|value of usename inside " " in SASL Connection String| 
 |kafkaPassword|Auth Token|The value is displayed only in the creation step|
+|OBJECT_STORAGE_NAMESPACE|TENANCY NAMESPACE|TENANCY|
+|NAMESPACE|TENANCY NAMESPACE|TENANCY|
+|PASSWORD_SECRET_OCID|PASSWORD_SECRET_OCID|OCID|
 
 >**Note:** All the resources created for this demo are in the US-ASHBURN-1 region. Check in what region you want to work. If you change the region, you need to change 2 points in 2 code files:
 > 
@@ -329,21 +325,13 @@ These are the variables that need to be changed with your tenancy resources valu
 
 ## Task 8: Understand the Java Code
 
-This demos were created in Java and this code can be portable to Python with no problem.
-The demo were divided in 2 parts:
+This demo was created in Java and this code can be portable to Python with no problem.
 
-    Application to Publish in a Kafka Streaming
-    Application to Consume from a Kafaka Streaming
+The application, to prove the efficience and scalability, was developed to show some possibilities in a common use case of an integration process. 
 
-Both applications, to prove the efficience and scalability, were developed to show some possibilities in a common use case of an integration process. So both code show these examples:
-
-    Read a CSV file with 1,000,000 of lines
-    Prepare the ADW Wallet to connect through a JDBC Connection
-    Insert the 1,000,000 of CSV data into the ADW database
-    Execute a SQL sentence to query an ADW table
-    Execute a SQL sentence to JOIN a CSV dataset with an ADW dataset table
-    Perform a loop of the CSV dataset to demonstrate an iteration with the data
-    Operate with Kafka Streaming
+    Connect to the Kafka Stream and read the data 
+    Process JOINS with an ADW table to build a useful information
+    Output a CSV file with every useful information came from Kafka
 
 Oracle Cloud Dataflow is a managed service for Apache Spark. This demo can be executed in your local machine and can be deployed into the Dataflow instance to run as a job execution. The workflow for a developer is very easy and fast.
 
@@ -355,15 +343,10 @@ Let's show the Example.java code in sections:
 #### Spark initialization
 
 This part of code represents the Spark initialization. Many confirations to perform execution processes are configured automatically, so it's very easy to work with the Spark engine.
+The initialization differs if you are running inside the **Data Flow** or in your local machine.
+If you are in **Data Flow**, you don't need to load the **ADW Wallet zip file**, the task of load, uncompress and read the Wallet files are automatic inside the Data Flow environment, but in the local machine, it needs to be done with some commands.
 
 ![Spark-initilization-code](./images/spark-initialization-code.png?raw=true)
-
-#### Read a large file in many formats
-
-Spark engine and the SDK permit a fast load and write file formats. A high volume can be manipulated in seconds and even miliseconds.
-So you can MERGE, FILTER, JOIN datasets in memory. The best thing is, you can manipulate differents datasources. 
-
-![read-csv-file-spark.png](./images/read-csv-file-spark.png?raw=true)
 
 #### Read the ADW Vault Secret
 
@@ -371,33 +354,11 @@ This part of code access your vault to obtain the secret of your ADW instance.
 
 ![spark-adw-vault-secret.png](./images/spark-adw-vault-secret.png?raw=true)
 
-#### Read the Wallet.zip file to connect through JDBC
+#### Query an ADW Table
 
-This section shows how to load the Wallet.zip file from Object Storage e configure the JDBC driver for use.
+This section show how to execute a query to a table
 
-![spark-jdbc-connection.png](./images/spark-jdbc-connection.png?raw=true)
-
-![spark-adw-get-secret.png](./images/spark-adw-get-secret.png?raw=true)
-
-#### Insert 1,000,000 lines of CSV dataset into ADW Database
-
-This is why Spark is nice and impressive. From the CSV dataset, it's possible to batch insert into ADW Database directly. Spark can optimizes the execution, using all the power of machines clusterized, CPUs and Memory to obtain best performances.
-
-![spark-insert-adw.png](./images/spark-insert-adw.png?raw=true)
-
-#### Data Transformation
-
-Imagine load many CSVs files, query some tables in the database in datasets, JOIN, filter, eliminate colums, calculate and many other operations in a few code lines, in a fraction of time and perform a write operation in any format.
-
-![spark-transform-datasets.png](./images/spark-transform-datasets.png?raw=true)
-
-In this example, a new dataset named **oracleDF2** was created from a CSV dataset and an ADW Database dataset.
-
-#### Iterate with a dataset in a Loop
-
-This is an example of a loop iteration over the CSV dataset (1,000,000 lines). The **row** object contains the mapping of the CSV fields structure. So you can obtain the data of each line and can execute APIs call and many other operations.
-
-![spark-iteration.png](./images/spark-iteration.png?raw=true)
+![query-adw-table.png](./images/query-adw-table.png)
 
 #### Kafka Operations
 
@@ -407,27 +368,30 @@ This is the preparation for connect to the OCI Streaming, using the Kafka API.
 
 ![kafka-connection.png](./images/kafka-connection.png?raw=true)
 
-After configure the connection parameters, the code shows how to produce and consume the streaming.
+There is a process to parse the **JSON** data came from **Kafka** topic into a **dataset** with the correct structure (Organization Id, Name, Country).
 
-![kafka-produce.png](./images/kafka-produce.png?raw=true)
+#### Merge the data from a Kafka Dataset and ADW Dataset
 
-![kafka-consume.png](./images/kafka-consume.png?raw=true)
+This section shows how to execute a query with 2 datasets.
 
+![merge-data.png](./images/merge-data.png)
+
+#### Output into a CSV File
+
+Here is how the merged data generates the output into a CSV File
+
+![output-csv1.png](./images/output-csv1.png)
+
+![output-csv2.png](./images/output-csv2.png)
 
 ## Task 9: Package your Application with Maven
 
 Before execute the job in Spark, it's necessary to package you application with Maven.
 Maven is one of the most known utilities to package applications with libraries and plugins. Let's package the application:
 
->**Note:** You can execute a fast test changing the CSV file with another with only 100 lines. To do this, just locate in the **Example.java** this code:
- 		**private static String INPUT_PATH = "oci://data@" + OBJECT_STORAGE_NAMESPACE + "/organizations1M.csv";**
-> 
-> Change the organizations1M.csv with organizations.csv. You will execute much more faster.
+### DataflowSparkStreamDemo Package
 
-
-### Java-CSV-DB Package
-
-Go to **/Java-CSV-DB** folder and execute this command:
+Go to **/DataflowSparkStreamDemo** folder and execute this command:
 
     mvn package
 
@@ -439,56 +403,32 @@ If everything is correct, you can see **Success** message:
 
 ![maven-success-1a.png](./images/maven-success-1a.png?raw=true)
 
-To test you application in your local Spark machine, just execute this command:
-
-    spark-submit --class example.Example target/loadadw-1.0-SNAPSHOT.jar
-
-### JavaConsumeKafka Package
-
-Go to **/JavaConsumeKafka** folder and execute this command:
-
-    mvn package
-
-You can see **Maven** starting the packaging:
-
-![maven-package-2a.png](./images/maven-package-2a.png?raw=true)
-
-If everything is correct, you can see **Success** message:
-
-![maven-success-2a.png](./images/maven-success-2a.png?raw=true)
-
-To test you application in your local Spark machine, just execute this command:
-
-    spark-submit --class example.Example target/loadkafka-1.0-SNAPSHOT.jar
-
 ## Task 10: Verify the Execution
 
-### Confirm ADW Insertions
+To test you application in your local Spark machine, just execute this command:
 
-You can see the results inside the Query 
-Go to Oracle Cloud main menu, select **Oracle Database** and **Autonomous Data Warehouse**.
-Click on the **Processed Logs** Instance to view the details.
-Click in the **Database actions** button to go to the database utilities.
+    spark-submit --class example.Example target/consumekafka-1.0-SNAPSHOT.jar
 
-![adw-actions.png](./images/adw-actions.png?raw=true)
+Go to your **Oracle Cloud Streaming** Kafka instance and click into "Produce Test Message" to generate some data to test you realtime application.
 
-Insert your credentials for the **ADMIN** user:
+![test-kafka-1.png](./images/test-kafka-1.png)
 
-![adw-login.png](./images/adw-login.png?raw=true)
+You can put this JSON message into the kafka topic:
 
-And click in **SQL** option to go to the Query Utilities:
+    {"Organization Id": "1235", "Name": "Teste", "Country": "Luxembourg"}
 
-![adw-select-sql.png](./images/adw-select-sql.png?raw=true)
+![test-kafka-2.png](./images/test-kafka-2.png)
 
-Execute a query to see the 1,000,000 of lines in your table:
+Each click to Produce button, you put one message to the application.
+you can see the application's output log something like this:
 
-![ADW-query-organizations.png](./images/ADW-query-organizations.png?raw=true)
+This is the data read from the kafka topic
 
-### Confirm Execution Logs
+![test-output-1.png](./images/test-output-1.png)
 
-You can see in the execution logs if the job can access and load the datasets.
+And this is the merged data from ADW table
 
-![spark-csv-results.png](./images/spark-csv-results.png?raw=true)
+![test-output-2.png](./images/test-output-2.png)
 
 ## Task 11: Create and Execute a Dataflow Job
 
@@ -512,6 +452,14 @@ And now, fill the parameters like this:
 Click on **Create** button.
 After creation, click on the **Scale Demo** link to view details:
 
+>**Note:** Click on the **Show advanced options** to enable the OCI security for the **Spark Stream** execution type:
+
+![advanced-options.png](./images/advanced-options.png)
+
+And activate the options:
+
+![principal-execution.png](./images/principal-execution.png)
+
 Now click on the **Run** button to execute the job.
 Confirm the parameters and click **Run** again:
 
@@ -524,15 +472,6 @@ It's possible to view the Status of the job:
 Wait until the Status go to **Succeeded** and you can see the results.
 
 ![dataflow-run-success.png](./images/dataflow-run-success.png?raw=true)
-
-#### Next Step
-
-The first application publishes the data into the Kafka Streaming.
-The second application consumes these data from the Kafka.
-
-So, create another **Dataflow Application** as the same way you created the first one.
-Remember only to change the **name** of your application and pay attention to change the package, from **loadadw-1.0-SNAPSHOT.jar** to **loadkafka-1.0-SNAPSHOT.jar**.
-You can maintain the other parameters and RUN the job.
 
 ## Related Links
 
@@ -556,6 +495,7 @@ You can maintain the other parameters and RUN the job.
 
 - [Create Oracle Cloud Streaming](https://blogs.oracle.com/developers/post/getting-started-with-oracle-streaming-service-oss)
 
+- [Spark Streaming](https://docs.oracle.com/pt-br/iaas/data-flow/using/spark-streaming.htm)
 ## Acknowledgments
 
 - **Author** - Cristiano Hoshikawa (Oracle LAD A-Team Solution Engineer)
