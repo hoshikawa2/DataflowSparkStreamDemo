@@ -436,6 +436,8 @@ Now, with both applications running with success in your local Spark machine, yo
 
 ### Upload the packages into Object Storage
 
+Before create a **Data Flow** application, you need to upload your Java artifact application (your *****-SNAPSHOT.jar** file) into the **Object Storage** bucket named **apps**.
+
 ### Create a Dataflow Application
 
 Select the Oracle Cloud main menu and go to **Analytics & AI** and **Data Flow**.
@@ -450,7 +452,7 @@ And now, fill the parameters like this:
 ![dataflow-app.png](./images/dataflow-app.png?raw=true)
 
 Click on **Create** button.
-After creation, click on the **Scale Demo** link to view details:
+After creation, click on the **Scale Demo** link to view details. To run a Job, click on the **RUN** button.
 
 >**Note:** Click on the **Show advanced options** to enable the OCI security for the **Spark Stream** execution type:
 
