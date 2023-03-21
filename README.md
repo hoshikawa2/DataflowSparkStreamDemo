@@ -1,4 +1,4 @@
-# Use Spark Streaming to read a high volume of data from Kafka 
+# Use Spark Streaming to process a Kafka topic near real-time 
 
 ## Introduction
 
