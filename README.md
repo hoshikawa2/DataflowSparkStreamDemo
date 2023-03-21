@@ -434,6 +434,8 @@ And this is the merged data from ADW table
 
 Now, with both applications running with success in your local Spark machine, you can deploy them into the **Oracle Cloud Dataflow** in your tenancy.
 
+>**Note:** Visit the **Spark Streaming** documentation to configure access to resources like Oracle Object Storage and Oracle Streaming (Kafka): [Enable Access to Data Flow](https://docs.oracle.com/pt-br/iaas/data-flow/using/dfs_getting_started.htm#resource-principal-policies)
+
 ### Upload the packages into Object Storage
 
 Before create a **Data Flow** application, you need to upload your Java artifact application (your *****-SNAPSHOT.jar** file) into the **Object Storage** bucket named **apps**.
