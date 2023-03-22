@@ -342,7 +342,7 @@ Let's show the Example.java code in sections:
 
 #### Spark initialization
 
-This part of code represents the Spark initialization. Many confirations to perform execution processes are configured automatically, so it's very easy to work with the Spark engine.
+This part of code represents the Spark initialization. Many parameters to perform execution processes are configured automatically, so it's very easy to work with the Spark engine.
 The initialization differs if you are running inside the **Data Flow** or in your local machine.
 If you are in **Data Flow**, you don't need to load the **ADW Wallet zip file**, the task of load, uncompress and read the Wallet files are automatic inside the Data Flow environment, but in the local machine, it needs to be done with some commands.
 
